@@ -2,13 +2,13 @@ name: Django CI
 
 on:
   push:
-    branches: ["wk05"]
+    branches: ["wk06"]
 
     paths:
       - "backend/**" # ทำงานเฉพาะเมื่อแก้ backend
 
   pull_request:
-    branches: ["wk05"]
+    branches: ["wk06"]
 
     paths:
       - "backend/**"
