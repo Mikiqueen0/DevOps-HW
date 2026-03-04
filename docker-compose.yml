@@ -1,0 +1,50 @@
+services:
+  backend:
+    build: ./backend
+    command: gunicorn mysite.wsgi:application --bind 0.0.0.0:8000
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DB_HOST=db
+      - DB_NAME=app_db
+      - DB_USER=user
+      - DB_PASS=pass
+    deploy:
+      replicas: 3  # Scaling Backend to 3 instances!
+
+  frontend-build:
+    build: ./frontend
+    volumes:
+      - frontend_dist:/app/dist
+      - static_volume:/shared
+    command: sh -c "npm run build && cp -r dist/* /shared/"  # Copy build to volume
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - static_volume:/srv  # Serve frontend from volume
+    depends_on:
+      - backend
+      - frontend-build
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=app_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+
+volumes:
+  pgdata:
+  static_volume:
+  frontend_dist:

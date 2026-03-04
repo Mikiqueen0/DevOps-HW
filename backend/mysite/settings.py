@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
     'main',
 ]
 
@@ -49,7 +51,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost", "http://127.0.0.1"]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',
+    }
+}
 
 ROOT_URLCONF = 'mysite.urls'
 
@@ -81,19 +97,19 @@ DATABASES = {
     },
     'postgres': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'), # 'resume_db'
-        'USER': os.environ.get('POSTGRES_USER'), # 'postgres',
-        'PASSWORD': 'secret', # os.environ.get('POSTGRES_PASSWORD'), # '1234',
-        'HOST': 'db', # os.environ.get('POSTGRES_HOST'), # 'db', #'postgres',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     },
     'mariadb': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resume_db',
-        'USER': 'root',
-        'PASSWORD': '1234',
-        'HOST': 'localhost', #'mariadb',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 
